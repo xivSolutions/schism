@@ -1,0 +1,1 @@
+create table if not exists artists (id serial primary key, name text not null);

@@ -17,39 +17,38 @@ defmodule Schism do
     sql = File.read!(file)
   end
 
-  def create_db(name) do
-    System.cmd("createdb", [name], stderr_to_stdout: true)
-    |> case do
-      {res, 0} ->  {:ok, true}
-      {res, _} -> {:error, res}
-    end
-  end
+  # def create_db(name) do
+  #   System.cmd("createdb", [name], stderr_to_stdout: true)
+  #   |> case do
+  #     {res, 0} ->  {:ok, true}
+  #     {res, _} -> {:error, res}
+  #   end
+  # end
 
-  def drop_db(name) do 
-    System.cmd("dropdb", ["--if-exists", name], stderr_to_stdout: true)
-    |> case do
-      {res, 0} ->  {:ok, true}
-      {res, _} -> {:error, res}
-    end
-    # System.cmd("psql", ["-U", "postgres", "-c", "drop database #{name}"])
-  end
+  # def drop_db(name) do 
+  #   System.cmd("dropdb", ["--if-exists", name], stderr_to_stdout: true)
+  #   |> case do
+  #     {res, 0} ->  {:ok, true}
+  #     {res, _} -> {:error, res}
+  #   end
+  # end
 
-  def db_exists(name) do
-    sql = "select coalesce ((select 1 from pg_database where datname='#{name}'), 0)"
-    System.cmd("psql", ["-t", "-A", "-c", sql], stderr_to_stdout: true)
-    |> case do
-      {res, 0} -> {:ok, res |> String.strip |> String.to_integer > 0}
-      {res, _} -> {:error, res}
-    end
-  end
+  # def db_exists(name) do
+  #   sql = "select coalesce ((select 1 from pg_database where datname='#{name}'), 0)"
+  #   System.cmd("psql", ["-t", "-A", "-c", sql], stderr_to_stdout: true)
+  #   |> case do
+  #     {res, 0} -> {:ok, res |> String.strip |> String.to_integer > 0}
+  #     {res, _} -> {:error, res}
+  #   end
+  # end
 
-  def get_schema_dump(dbname) do
-    System.cmd("pg_dump", ["-d", dbname, "--schema-only"], stderr_to_stdout: true)
-    |> case do
-      {res, 0} -> {:ok, res}
-      {res, _} -> {:error, res}
-    end
-  end
+  # def get_schema_dump(dbname) do
+  #   System.cmd("pg_dump", ["-d", dbname, "--schema-only"], stderr_to_stdout: true)
+  #   |> case do
+  #     {res, 0} -> {:ok, res}
+  #     {res, _} -> {:error, res}
+  #   end
+  # end
 
   def create_pg_script(input_script) do
     temp_db = "temp_001"

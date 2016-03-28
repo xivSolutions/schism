@@ -1,17 +1,7 @@
 defmodule Schism.SqlParser do 
 
-  @create_table_regex "(?=CREATE TABLE).+?(?<=;)/i"
-  @alter_table_regex "(?=ALTER TABLE).+?(?<=;)/i"
-
-  @create_sequence_regex "(?=CREATE SEQUENCE).+?(?<=;)/i"
-  @alter_sequence_regex "(?=ALTER SEQUENCE).+?(?<=;)/i"
-
-
-  # def capture_create_table(script) do
-  #   regex = ~r/(?=ALTER TABLE).+?(?<=;)/i/
-  #   Regex.scan(regex, script)
-
-  # end
+  # SET (?!search_path).+(?<=;) anything but search_path
+  # (?=SET default_tablespace).+?(?<=;)
 
   def strip_comments_and_whitespace(script) do
     # these need to be done in order - comments first, then whitespace:
@@ -20,6 +10,20 @@ defmodule Schism.SqlParser do
 
   def get_search_path_groups(script) do
     regex = ~r/(SET search_path).+?(?=SET search_path)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+  # do this within each search path group:
+  def get_default_tablespace(script) do
+    regex = ~r/(?=SET default_tablespace).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+  # do this within each search path group:
+  def get_default_with_oids(script) do
+    regex = ~r/(?=SET default_with_oids).+?(?<=;)/i
     Regex.scan(regex, script, capture: :first)
     |> List.flatten
   end
@@ -57,6 +61,7 @@ defmodule Schism.SqlParser do
   end
 
 
+
   def get_create_function_statements(script) do
     regex = ~r/(?=(CREATE FUNCTION|CREATE OR REPLACE FUNCTION)).+?(?<=;)/i
     Regex.scan(regex, script, capture: :first)
@@ -70,6 +75,7 @@ defmodule Schism.SqlParser do
   end
 
 
+
   def get_create_view_statements(script) do
     regex = ~r/(?=(CREATE VIEW|CREATE OR REPLACE VIEW)).+?(?<=;)/i
     Regex.scan(regex, script, capture: :first)
@@ -81,7 +87,8 @@ defmodule Schism.SqlParser do
     Regex.scan(regex, script, capture: :first)
     |> List.flatten
   end
-  
+
+
 
   def get_create_sequence_statements(script) do
     regex = ~r/(?=CREATE SEQUENCE).+?(?<=;)/i
@@ -109,10 +116,4 @@ defmodule Schism.SqlParser do
   end
 
 
-
-
-
-
- #regex sample: (?=SET search_path).* needs more
- #regex sample: match commented lines (?=--).+
 end

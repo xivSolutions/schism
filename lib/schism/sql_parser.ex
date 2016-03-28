@@ -57,6 +57,46 @@ defmodule Schism.SqlParser do
   end
 
 
+  def get_create_function_statements(script) do
+    regex = ~r/(?=(CREATE FUNCTION|CREATE OR REPLACE FUNCTION)).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+  def get_alter_function_statements(script) do
+    regex = ~r/(?=ALTER FUNCTION).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+
+  def get_create_view_statements(script) do
+    regex = ~r/(?=(CREATE VIEW|CREATE OR REPLACE VIEW)).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+  def get_alter_view_statements(script) do
+    regex = ~r/(?=ALTER VIEW).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+  
+
+  def get_create_sequence_statements(script) do
+    regex = ~r/(?=CREATE SEQUENCE).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+  def get_alter_sequence_statements(script) do
+    regex = ~r/(?=ALTER SEQUENCE).+?(?<=;)/i
+    Regex.scan(regex, script, capture: :first)
+    |> List.flatten
+  end
+
+
+
   defp strip_comments(script) do
     regex = ~r/(?=--).+/
     String.replace(script, regex, "")
